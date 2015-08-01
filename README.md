@@ -1,5 +1,8 @@
 # permitted
 
+[![NPM Version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+
 role & permission control
 
 ## usage
@@ -17,7 +20,7 @@ let policy = new Policy({
     }
 });
 
-let user = new User(["admin", "editor"], policy);
+let user = new User("admin", policy);
 
 user.can("read", "article");  // false
 user.can("manage", "user");  // true
@@ -67,3 +70,8 @@ app.use((req, res, next)=>
 
 app.get("article/:id", can("read", "article"), handler);
 ```
+
+[npm-image]: https://img.shields.io/npm/v/permitted.svg?style=flat
+[npm-url]: https://npmjs.org/package/permitted
+[travis-image]: https://img.shields.io/travis/zweifisch/permitted.svg?style=flat
+[travis-url]: https://travis-ci.org/zweifisch/permitted
