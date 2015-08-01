@@ -2,7 +2,7 @@
 chai = require 'chai'
 chai.should()
 
-{User, Policy} = require '.'
+{User, Policy} = require './index'
 
 describe 'User', ->
 
