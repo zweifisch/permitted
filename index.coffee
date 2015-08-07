@@ -41,8 +41,8 @@ class Policy
 
     query: (role, action, resource)->
         return yes if role is @root
-        throw new Error "Resource #{resource} not defined" unless resource of @rules
-        throw new Error "Action #{action} not defined" unless action of @rules[resource]
+        return no unless resource of @rules
+        return no unless action of @rules[resource]
         role2bool = @rules[resource][action]
         return role2bool[role] if role of role2bool
         if role of @ancesters
