@@ -1,26 +1,31 @@
 
+# [role] -> role:bool
+roles2map = (roles)->
+    ret = {}
+    roles = [roles] unless Array.isArray roles
+    for role in roles
+        if role.charAt(0) is "!"
+            ret[role.substr 1] = no
+        else
+            ret[role] = yes
+    ret
+
 
 class Policy
 
     constructor: (policy, hierachy)->
 
-        @lookup = {}
-        # role -> resource -> action -> true
+        # role : [role]
         @ancesters = {}
-        # role -> [role]
 
-        for resource, actions of policy
-            for action, roles of actions
-                roles = [roles] unless Array.isArray roles
-                for role in roles
-                    permitted = true
-                    if "!" is role.charAt 0
-                        role = role.substr 1
-                        permitted = false
-                    @lookup[role] = {} unless role of @lookup
-                    res2action = @lookup[role]
-                    res2action[resource] = {} unless resource of res2action
-                    res2action[resource][action] = permitted
+        # resource : action : role : bool
+        @rules = {}
+
+        for resource, action2roles of policy
+            action2roles2bool = {}
+            for action, roles of action2roles
+                action2roles2bool[action] = roles2map roles
+            @rules[resource] = action2roles2bool
 
         findAncesters = (role)->
             if role of hierachy
@@ -34,24 +39,14 @@ class Policy
         for role, _ of hierachy
             @ancesters[role] = findAncesters role unless role of @ancesters
 
-        for role, _ancesters of @ancesters
-            for ancester in _ancesters
-                for own res,actions of @lookup[ancester]
-                    @lookup[role][res] = {} unless res of @lookup[role]
-                    action2bool = @lookup[role][res]
-                    for own action, permitted of actions
-                        action2bool[action] = permitted unless action of action2bool
-
     query: (role, action, resource)->
-        return no unless role of @lookup
-        return no unless resource of @lookup[role]
-        actions = @lookup[role][resource]
-        if action of actions
-            actions[action]
-        else if "default" of actions
-            actions["default"]
-        else
-            no
+        throw new Error "Resource #{resource} not defined" unless resource of @rules
+        throw new Error "Action #{action} not defined" unless action of @rules[resource]
+        role2bool = @rules[resource][action]
+        return role2bool[role] if role of role2bool
+        if role of @ancesters
+            for r in @ancesters[role]
+                return role2bool[r] if r of role2bool
 
     extends: (role, ancester)->
         if role of @ancesters
@@ -73,7 +68,7 @@ class User
 
 
 can = (args...)-> (req, res, next)->
-    if req.user.can args...
+    if req.user?.can? args...
         next()
     else
         res.sendStatus 403

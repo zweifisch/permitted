@@ -16,7 +16,7 @@ let policy = new Policy({
         write: "editor"
     },
     user: {
-        default: "admin"
+        manage: "admin"
     }
 });
 
@@ -51,7 +51,6 @@ user.is("editor");  // true
 user.can("read", "article");  // true
 user.can("report", "issue");  // false
 ```
-
 ### attach extra data to user object
 
 ```js

@@ -13,7 +13,7 @@ describe 'User', ->
                 read: ["user", "editor"]
                 write: "editor"
             user:
-                default: "admin"
+                create: "admin"
 
         it 'should check user permission from policy', ->
             user = new User "user", policy
@@ -41,21 +41,22 @@ describe 'User', ->
                 read: ["user", "editor"]
                 write: "editor"
             user:
-                default: "admin"
+                manage: "admin"
 
         hierarchy =
             admin: "editor"
             editor: "user"
 
-        it 'should allow role inheritance', ->
-            user = new User "admin", new Policy policy, hierarchy
-            user.can("read", "article").should.equal yes
-            user.can("write", "article").should.equal yes
-            user.can("create", "user").should.equal yes
+        it 'admin should extend editor and user', ->
+            admin = new User "admin", new Policy policy, hierarchy
+            admin.can("read", "article").should.equal yes
+            admin.can("write", "article").should.equal yes
+            admin.can("manage", "user").should.equal yes
 
-            user = new User "editor", new Policy policy, hierarchy
-            user.can("read", "article").should.equal yes
-            user.can("manage", "user").should.equal no
+        it 'editor should extend user', ->
+            editor = new User "editor", new Policy policy, hierarchy
+            editor.can("read", "article").should.equal yes
+            editor.can("manage", "user").should.equal no
 
         it 'should identify user', ->
             user = new User "admin", new Policy policy, hierarchy
@@ -75,7 +76,7 @@ describe 'User', ->
                 read: ["user", "editor"]
                 write: ["editor", "!admin"]
             user:
-                default: "admin"
+                manage: "admin"
 
         hierarchy =
             admin: "editor"
@@ -90,7 +91,7 @@ describe 'User', ->
             user.can("write", "article").should.equal no
 
         it 'should not allow admin to create user', ->
-            user.can("create", "user").should.equal yes
+            user.can("manage", "user").should.equal yes
 
     describe 'custom data', ->
 
