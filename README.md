@@ -51,6 +51,21 @@ user.is("editor");  // true
 user.can("read", "article");  // true
 user.can("report", "issue");  // false
 ```
+
+### the root role
+
+root can do anything
+
+```js
+let root = new User("root", new Policy(policy, hierarchy));
+```
+
+to specify another role other than `root`, provide a third params to Policy consturctor
+
+```js
+new Policy(policy, hierarchy, "god");
+```
+
 ### attach extra data to user object
 
 ```js

@@ -13,7 +13,7 @@ roles2map = (roles)->
 
 class Policy
 
-    constructor: (policy, hierachy)->
+    constructor: (policy, hierachy, @root="root")->
 
         # role : [role]
         @ancesters = {}
@@ -40,6 +40,7 @@ class Policy
             @ancesters[role] = findAncesters role unless role of @ancesters
 
     query: (role, action, resource)->
+        return yes if role is @root
         throw new Error "Resource #{resource} not defined" unless resource of @rules
         throw new Error "Action #{action} not defined" unless action of @rules[resource]
         role2bool = @rules[resource][action]

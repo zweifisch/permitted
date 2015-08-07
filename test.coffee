@@ -34,6 +34,10 @@ describe 'User', ->
             user.is("editor").should.equal no
             user.is("user").should.equal yes
 
+        it 'root should be able to do anything', ->
+            root = new User "root", policy
+            root.can("create", "user").should.equal yes
+
     describe 'role inheritance', ->
 
         policy =
