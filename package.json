@@ -1,17 +1,14 @@
 {
   "name": "permitted",
-  "version": "0.0.3",
-  "description": "user role & permission management",
+  "version": "0.1.0",
+  "description": "role based access control",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --compilers js:coffee-script/register test.coffee --bail",
-    "build": "./node_modules/coffee-script/bin/coffee -c index.coffee",
-    "prepublish": "npm run build"
+    "test": "mocha test.js --bail"
   },
   "author": "zf",
   "license": "MIT",
   "devDependencies": {
-    "coffee-script": "^1.9.3",
     "chai": "^3.2.0",
     "mocha": "^2.2.5"
   },

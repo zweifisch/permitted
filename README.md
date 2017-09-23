@@ -3,53 +3,53 @@
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 
-role & permission control
+role based access control
 
 ## usage
 
 ```js
-import {User, Policy} from "permitted";
+import {User, Policy} from 'permitted'
 
 let policy = new Policy({
     article: {
-        read: ["user", "editor"],
-        write: "editor"
+        read: ['user', 'editor'],
+        write: 'editor'
     },
     user: {
-        manage: "admin"
+        manage: 'admin'
     }
-});
+})
 
-let user = new User("admin", policy);
+let user = new User('admin', policy)
 
-user.can("read", "article");  // false
-user.can("manage", "user");  // true
-user.is("admin");  // true
+user.can('read', 'article')  // false
+user.can('manage', 'user')  // true
+user.is('admin')  // true
 ```
 
 ### role inheritance
 
 ```js
-import {User, Policy} from "permitted";
+import {User, Policy} from 'permitted'
 
-let hierarchy = {
-    admin: ["user", "editor"],
-    editor: "user"
-};
+let hierachy = {
+    admin: ['user', 'editor'],
+    editor: 'user'
+}
 let policy = {
     article: {
-        read: "user",
-        write: "editor"
+        read: 'user',
+        write: 'editor'
     },
     issue: {
-        report: ["user", "!admin"]
+        report: ['user', '!admin']
     }
 }
-let user = new User("admin", new Policy(policy, hierarchy));
+let user = new User('admin', new Policy(policy, hierarchy))
 
-user.is("editor");  // true
-user.can("read", "article");  // true
-user.can("report", "issue");  // false
+user.is('editor')  // true
+user.can('read', 'article')  // true
+user.can('report', 'issue')  // false
 ```
 
 ### the root role
@@ -57,32 +57,34 @@ user.can("report", "issue");  // false
 root can do anything
 
 ```js
-let root = new User("root", new Policy(policy, hierarchy));
+let root = new User('root', new Policy(policy, hierarchy))
 ```
 
 to specify another role other than `root`, provide a third params to Policy consturctor
 
 ```js
-new Policy(policy, hierarchy, "god");
+new Policy(policy, hierarchy, 'admin')
 ```
 
 ### attach extra data to user object
 
 ```js
-let user = new User(["role", "elor"], policy, {id: req.session.id});
-console.log(user.id);
+let user = new User(['role', 'elor'], policy, {id: req.session.id})
+console.log(user.id)
 ```
 
-## middleware
+## koa middleware
 
 ```js
-import {User, Policy, can} from permitted;
-app.use((req, res, next)=>
-    req.user = new User(req.session.roles, new Policy(policy, hierachy));
-    next();
-);
+import {User, Policy, can} from permitted
+app.use((ctx, next) => {
+    req.user = new User(req.session.roles, new Policy(policy, hierachy))
+    next()
+})
 
-app.get("article/:id", can("read", "article"), handler);
+app.get('/articles/:id', can('read', 'article'), ctx => {
+    // ...
+})
 ```
 
 [npm-image]: https://img.shields.io/npm/v/permitted.svg?style=flat
